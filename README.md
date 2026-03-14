@@ -16,7 +16,7 @@ a REST API, and an interactive web interface.
 
 > Fill in a claim form → get an instant fraud prediction with probability and confidence score.
 
-![Streamlit App Demo](screenshots/AppScreen.png)
+![Streamlit App Demo](screenshots/AppScreen)
 
 ---
 
