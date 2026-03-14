@@ -1,205 +1,178 @@
-# 🚗 Car Insurance Fraud Detection — Complete Project
+# 🚗 Car Insurance Fraud Detection
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green?logo=fastapi)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.35-red?logo=streamlit)
+![LightGBM](https://img.shields.io/badge/Model-LightGBM-orange)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
+
+A complete end-to-end Machine Learning project that detects fraudulent car insurance claims.
+Built with a full ML pipeline: data exploration, SMOTE balancing, model tuning, a REST API, and an interactive web interface.
+
+---
+
+## 📸 Demo
+
+> Fill in a claim → get an instant fraud prediction with confidence score.
+
+<!-- After you take a screenshot of the Streamlit app, upload it to your repo
+     and replace the line below with: ![Demo](screenshots/demo.png) -->
+*Screenshot coming soon*
+
+---
+
+## 🧠 What This Project Does
+
+Insurance companies lose billions every year to fraudulent claims. This project builds
+a machine learning model that looks at a claim's details and predicts:
+
+> **"Is this claim FRAUD or LEGITIMATE?"**
+
+---
+
+## 🏗️ Project Architecture
+
+```
+User fills Streamlit form
+        ↓
+Streamlit sends claim data (JSON)
+        ↓
+FastAPI receives request → loads model → runs prediction
+        ↓
+Returns: prediction + fraud probability + confidence
+        ↓
+Streamlit displays the result
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
-fraud_project/
+car-insurance-fraud-detection/
 │
 ├── notebook/
-│   └── car_insurance_fraud_detection.ipynb   ← Run this first in Google Colab
-│
-├── model_artifacts/                           ← Created by the notebook
-│   ├── model.pkl                              ← Trained ML model
-│   ├── scaler.pkl                             ← StandardScaler (fitted on training data)
-│   ├── label_encoders.pkl                     ← LabelEncoders for text columns
-│   └── feature_columns.pkl                    ← Column order used during training
+│   ├── car_insurance_fraud_detection.ipynb        # Original model (v1)
+│   └── car_insurance_fraud_detection_v2.ipynb     # Improved model (v2) ← recommended
 │
 ├── api/
-│   └── main.py                                ← FastAPI server
+│   └── main.py             # FastAPI server — serves predictions via HTTP
 │
 ├── streamlit_app/
-│   └── app.py                                 ← Streamlit web interface
+│   └── app.py              # Streamlit web interface
 │
-├── requirements.txt                           ← All dependencies
-└── README.md                                  ← This file
+├── model_artifacts/        # ← YOU must generate these by running the notebook
+│   ├── model.pkl           # Trained LightGBM model
+│   ├── scaler.pkl          # StandardScaler (fitted on training data)
+│   ├── label_encoders.pkl  # LabelEncoders for categorical columns
+│   └── feature_columns.pkl # Feature column order
+│
+├── requirements.txt        # All dependencies
+└── README.md
 ```
 
 ---
 
-## 🧠 Understanding Each Part
+## ⚙️ Tech Stack
 
-### Part 1: The Notebook (Google Colab)
-**What it does:** Loads the data, trains 3 ML models, picks the best one, and saves it.
-
-**Key output:** 4 `.pkl` files inside `model_artifacts/`
-
-**Run it:** Upload to Google Colab, run all cells top to bottom, then download the `.pkl` files.
-
----
-
-### Part 2: Pickle Files (`.pkl`)
-**What is Pickle?**
-Pickle is Python's built-in way to save any object to a file.
-
-A trained ML model is just a Python object with numbers inside it (the learned patterns).
-Without saving it, you'd have to retrain from scratch every time.
-
-```python
-# Saving
-import pickle
-with open('model.pkl', 'wb') as f:   # 'wb' = write binary
-    pickle.dump(my_model, f)
-
-# Loading
-with open('model.pkl', 'rb') as f:   # 'rb' = read binary
-    my_model = pickle.load(f)
-```
-
-**Why save 4 files, not just the model?**
-When new data arrives, it must go through the EXACT same transformations
-as the training data used. So we save:
-- `model.pkl` → the trained model itself
-- `scaler.pkl` → to normalize new data the same way
-- `label_encoders.pkl` → to encode text fields the same way
-- `feature_columns.pkl` → to ensure column order matches
+| Layer | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| ML Models | LightGBM, XGBoost, Random Forest |
+| Imbalance Fix | SMOTE (imbalanced-learn) |
+| Tuning | GridSearchCV |
+| API | FastAPI + Uvicorn |
+| Web Interface | Streamlit |
+| Model Saving | Pickle |
 
 ---
 
-### Part 3: FastAPI (`api/main.py`)
-**What is an API?**
-An API (Application Programming Interface) is a way for programs to talk to each other.
-Our API is a web server that:
-- Listens for incoming claim data (sent as JSON)
-- Runs it through our model
-- Returns a prediction (also as JSON)
+## 🚀 How to Run This Project (Step by Step)
 
-**What is FastAPI?**
-FastAPI is a Python library that makes building APIs easy. It handles:
-- Receiving HTTP requests
-- Validating input data
-- Generating interactive documentation automatically
-
-**How data flows through the API:**
-```
-1. Client sends POST /predict with JSON data
-2. FastAPI validates the JSON against ClaimInput schema
-3. Categorical fields are encoded with saved LabelEncoders
-4. Features are scaled with saved StandardScaler
-5. Model predicts fraud probability
-6. Result is returned as JSON
-```
-
-**The auto-generated docs:**
-When the API is running, visit http://127.0.0.1:8000/docs
-You can test the API directly from your browser — no code needed!
+### Prerequisites
+- Python 3.10 or higher installed
+- Git installed
+- A Google account (for running the notebook in Colab)
 
 ---
 
-### Part 4: Streamlit (`streamlit_app/app.py`)
-**What is Streamlit?**
-Streamlit is a Python library that creates interactive web apps from plain Python scripts.
-No HTML, CSS, or JavaScript needed — just Python.
+### Step 1 — Clone the Repository
 
-**How it connects to the model:**
-The Streamlit app does NOT load the model directly.
-Instead, it sends the user's form data to the FastAPI server and displays the response.
-
-```
-[User fills form] → [Streamlit sends request] → [FastAPI runs model] → [Streamlit shows result]
-```
-
-This separation is good practice because:
-- The model logic lives in one place (the API)
-- Multiple apps (mobile, web, etc.) can use the same API
-- Easy to update the model without changing the UI
-
----
-
-## 🚀 How to Run Everything
-
-### Step 1: Run the Notebook
-1. Open Google Colab
-2. Upload `car_insurance_fraud_detection.ipynb`
-3. Upload `car_insurance_fraud_dataset.csv`
-4. Run all cells
-5. Download the 4 `.pkl` files from `/content/model_artifacts/`
-
-### Step 2: Set Up Your Local Environment
 ```bash
-# Create a virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate      # Mac/Linux
-venv\Scripts\activate         # Windows
+git clone https://github.com/Ahmed7610/car-insurance-fraud-detection.git
+cd car-insurance-fraud-detection
+```
 
-# Install all dependencies
+---
+
+### Step 2 — Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: Place the Pickle Files
-```
-fraud_project/
-└── model_artifacts/
-    ├── model.pkl
-    ├── scaler.pkl
-    ├── label_encoders.pkl
-    └── feature_columns.pkl
+On Ubuntu, if you get a permissions error:
+```bash
+pip install -r requirements.txt --break-system-packages
 ```
 
-### Step 4: Start the FastAPI Server
+---
+
+### Step 3 — Generate the Model Files (pkl files)
+
+The trained model files are not included in this repo (they are too large).
+You need to generate them yourself by running the notebook.
+
+1. Go to [Google Colab](https://colab.research.google.com)
+2. Upload `notebook/car_insurance_fraud_detection_v2.ipynb`
+3. Upload the dataset file `car_insurance_fraud_dataset.csv`
+4. Click **Runtime → Restart session and run all**
+5. Wait for all cells to finish — the last cell downloads 4 files automatically
+6. Move all 4 files into the `model_artifacts/` folder
+
+---
+
+### Step 4 — Start the FastAPI Server (Terminal 1)
+
 ```bash
 cd api/
 uvicorn main:app --reload
 ```
-→ API is now running at http://127.0.0.1:8000
-→ Interactive docs at http://127.0.0.1:8000/docs
 
-### Step 5: Start the Streamlit App (in a NEW terminal)
+You should see:
+```
+✅ Model and artifacts loaded successfully!
+INFO: Uvicorn running on http://127.0.0.1:8000
+```
+
+> 💡 Visit **http://127.0.0.1:8000/docs** to test the API in your browser
+
+---
+
+### Step 5 — Start the Streamlit App (Terminal 2)
+
+Open a **new terminal** — keep Terminal 1 running!
+
 ```bash
 cd streamlit_app/
 streamlit run app.py
 ```
-→ Web app opens automatically at http://localhost:8501
+
+Your browser opens at **http://localhost:8501** — fill in the form and click Predict.
 
 ---
 
-## 🌐 API Endpoints
+## 🔌 API Reference
 
-| Method | URL | Description |
-|--------|-----|-------------|
-| GET | `/` | Health check — is the server alive? |
-| POST | `/predict` | Submit claim data, get fraud prediction |
-| GET | `/model-info` | See model type and feature names |
-| GET | `/docs` | Interactive API documentation (auto-generated) |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Health check |
+| POST | `/predict` | Submit a claim, get fraud prediction |
+| GET | `/model-info` | See model type and features |
+| GET | `/docs` | Interactive API documentation |
 
-### Example API Request
-```bash
-curl -X POST "http://127.0.0.1:8000/predict" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "policy_state": "CA",
-       "policy_deductible": 500,
-       "policy_annual_premium": 1350.75,
-       "insured_age": 42,
-       "insured_sex": "MALE",
-       "insured_education_level": "College",
-       "insured_occupation": "Manager",
-       "insured_hobbies": "reading",
-       "incident_type": "Multi-vehicle Collision",
-       "collision_type": "Rear",
-       "incident_severity": "Total Loss",
-       "authorities_contacted": "Police",
-       "incident_state": "OH",
-       "incident_hour_of_the_day": 14,
-       "number_of_vehicles_involved": 2,
-       "bodily_injuries": 1,
-       "witnesses": 2,
-       "police_report_available": "Yes",
-       "claim_amount": 45000.00,
-       "total_claim_amount": 50000.00
-     }'
-```
+### Example Response
 
-### Example API Response
 ```json
 {
   "prediction": "FRAUD",
@@ -210,15 +183,54 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 
 ---
 
-## 🔑 Key Concepts Summary
+## 🧪 ML Pipeline Summary
 
-| Concept | Plain English Explanation |
+```
+Raw Data (30,000 claims)
+        ↓
+Drop irrelevant columns → Label Encode → Train/Test Split
+        ↓
+StandardScaler → SMOTE (train only) → 5-Fold Cross Validation
+        ↓
+GridSearchCV (hyperparameter tuning)
+        ↓
+Best Model: LightGBM
+        ↓
+Save with Pickle → Deploy with FastAPI → Serve via Streamlit
+```
+
+---
+
+## 📊 Model Performance
+
+| Model | Accuracy | ROC-AUC |
+|---|---|---|
+| Random Forest | ~0.85 | ~0.88 |
+| XGBoost | ~0.87 | ~0.91 |
+| LightGBM (tuned) | ~0.88 | ~0.93 |
+
+---
+
+## 💡 Key Concepts Used
+
+| Concept | Why it matters |
 |---|---|
-| **Pickle** | Saving a trained Python object to a file so you don't have to retrain |
-| **API** | A door that lets programs talk to each other over the internet |
-| **FastAPI** | Python library for building APIs quickly with automatic validation and docs |
-| **Pydantic** | Data validation library used by FastAPI to check incoming JSON |
-| **POST request** | Sending data TO a server (vs GET which just fetches data) |
-| **JSON** | A text format for exchanging data between programs — like a Python dict |
-| **Streamlit** | Turns a Python script into a web app without any HTML/CSS/JS |
-| **`requests` library** | Python library for making HTTP requests (used by Streamlit to call the API) |
+| **SMOTE** | Fixes class imbalance — without it, model ignores fraud cases |
+| **StratifiedKFold** | Keeps fraud ratio equal across all CV folds |
+| **GridSearchCV** | Finds optimal hyperparameters automatically |
+| **LightGBM** | Faster and more accurate than Random Forest on tabular data |
+| **Pickle** | Saves trained model so we don't retrain on every request |
+| **FastAPI** | Serves the model as an HTTP API any app can call |
+| **Streamlit** | Turns a Python script into a usable web interface |
+
+---
+
+## 👤 Author
+
+**Ahmed** — [@Ahmed7610](https://github.com/Ahmed7610)
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
