@@ -16,7 +16,7 @@ a REST API, and an interactive web interface.
 
 > Fill in a claim form → get an instant fraud prediction with probability and confidence score.
 
-![Streamlit App Demo](screenshots/streamlit_demo.png)
+![Streamlit App Demo](screenshots/AppScreen.png)
 
 ---
 
@@ -94,12 +94,11 @@ car-insurance-fraud-detection/
 
 ### 1 — Data Exploration (EDA)
 
-![Class Distribution](screenshots/class_distribution.png)
+![Class Distribution](screenshots/Distribution.png)
 
 The dataset has ~80% legitimate and ~20% fraud claims — a classic **imbalanced** problem.
 Without handling this, a model can cheat by always predicting "legitimate" and still get 80% accuracy.
 
-![Feature Patterns](screenshots/feature_patterns.png)
 
 We explored which features have the strongest relationship with fraud
 (claim amount, incident severity, incident type, and more).
@@ -108,7 +107,7 @@ We explored which features have the strongest relationship with fraud
 
 ### 2 — SMOTE: Fixing Class Imbalance
 
-![SMOTE Before After](screenshots/smote_before_after.png)
+![SMOTE Before After](screenshots/Distribution_before_after_SMOTE.png)
 
 **SMOTE** (Synthetic Minority Over-sampling Technique) generates new synthetic fraud examples
 until both classes are balanced 50/50. This forces the model to actually learn fraud patterns.
@@ -119,7 +118,7 @@ until both classes are balanced 50/50. This forces the model to actually learn f
 
 ### 3 — Cross-Validation
 
-![Cross Validation Results](screenshots/cross_validation.png)
+![Cross Validation Results](screenshots/Cross_Validation_Results.png)
 
 Instead of evaluating on a single split, we use **5-Fold Stratified Cross-Validation**.
 Each model is trained and tested 5 times on different portions of the data.
@@ -129,7 +128,7 @@ This gives a much more honest and stable performance estimate.
 
 ### 4 — Model Comparison & ROC Curves
 
-![ROC Curves](screenshots/roc_curves.png)
+![ROC Curves](screenshots/Ros_Curves.png)
 
 We trained and compared 3 models, all on SMOTE-balanced data:
 
@@ -143,7 +142,7 @@ We trained and compared 3 models, all on SMOTE-balanced data:
 
 ### 5 — Feature Importance
 
-![Feature Importance](screenshots/feature_importance.png)
+![Feature Importance](screenshots/Important_Features.png)
 
 LightGBM tells us which features it found most useful for detecting fraud.
 The top predictors are claim amount, total claim amount, and incident severity.
