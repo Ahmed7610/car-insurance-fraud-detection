@@ -54,8 +54,7 @@ Streamlit displays the result
 car-insurance-fraud-detection/
 │
 ├── notebook/
-│   ├── car_insurance_fraud_detection.ipynb        # v1 — baseline models
-│   └── car_insurance_fraud_detection_v2.ipynb     # v2 — full improvements ← use this
+│   └── car_insurance_fraud_detection.ipynb     
 │
 ├── api/
 │   └── main.py             # FastAPI server
